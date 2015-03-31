@@ -150,11 +150,11 @@
 	<b><?php echo CHtml::encode($data->getAttributeLabel('notas_prescripcion')); ?>:</b>
 	<?php echo CHtml::encode($data->notas_prescripcion); ?>
 	<br />
-
+*/
 	<b><?php echo CHtml::encode($data->getAttributeLabel('fin_prescripcion')); ?>:</b>
 	<?php echo CHtml::encode($data->fin_prescripcion); ?>
 	<br />
 
-	*/ ?>
+	 ?>
 
 </div>
