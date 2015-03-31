@@ -1,0 +1,1230 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.1.14
+-- Dumped by pg_dump version 9.1.14
+-- Started on 2015-03-30 06:41:37 VET
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 184 (class 3079 OID 11645)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2079 (class 0 OID 0)
+-- Dependencies: 184
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 168 (class 1259 OID 26625)
+-- Dependencies: 1854 1855 1856 1857 1858 1859 1860 1861 1862 1863 1864 1865 1866 1867 1868 1869 5
+-- Name: admision; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE admision (
+    encuentro_id integer NOT NULL,
+    paciente_id bigint NOT NULL,
+    encuentro_fecha date,
+    encuentro_tipo character varying(35) DEFAULT ''::character varying,
+    hora time without time zone DEFAULT '00:00:00'::time without time zone,
+    diagnostico_referido character varying(255) DEFAULT ''::character varying,
+    terapia_recomendada_referido character varying(255) DEFAULT ''::character varying,
+    medico_referido character varying(60) DEFAULT ''::character varying,
+    institucion_referido character varying(255) DEFAULT ''::character varying,
+    notas_referido text DEFAULT ''::text,
+    compania_seguros character varying(25) DEFAULT '0'::character varying,
+    compania_seguros2 character varying(25) DEFAULT '0'::character varying,
+    contacto_paciente_nombre character varying(30),
+    contacto_paciente_apellido character varying(30),
+    contacto_relation character varying(35) DEFAULT ''::character varying,
+    numero_habitacion smallint DEFAULT (0)::smallint,
+    doctor_consulta character varying(60) DEFAULT ''::character varying,
+    servicios_extras character varying(25) DEFAULT ''::character varying,
+    alta smallint DEFAULT (0)::smallint,
+    fecha_alta date,
+    hora_alta time without time zone,
+    fecha_revision date DEFAULT '0001-01-01'::date,
+    responsable_revision character varying(255),
+    notas_encuentro text,
+    estatus character varying(25) DEFAULT ''::character varying NOT NULL,
+    primer_nombre character varying(60) NOT NULL,
+    primer_apellido character varying(60) NOT NULL
+);
+
+
+ALTER TABLE public.admision OWNER TO postgres;
+
+--
+-- TOC entry 167 (class 1259 OID 26623)
+-- Dependencies: 5 168
+-- Name: admision_encuentro_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE admision_encuentro_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.admision_encuentro_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2080 (class 0 OID 0)
+-- Dependencies: 167
+-- Name: admision_encuentro_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE admision_encuentro_id_seq OWNED BY admision.encuentro_id;
+
+
+--
+-- TOC entry 170 (class 1259 OID 26657)
+-- Dependencies: 1870 1871 1873 1874 1875 1876 1877 1878 5
+-- Name: asignaciones; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE asignaciones (
+    id integer NOT NULL,
+    actividad character varying(35) NOT NULL,
+    descripcion_actividad text DEFAULT ' '::text NOT NULL,
+    id_responsable smallint DEFAULT 0 NOT NULL,
+    id_quirofano smallint DEFAULT 0 NOT NULL,
+    fecha_inicio date DEFAULT '0001-01-01'::date,
+    hora time without time zone DEFAULT '00:00:00'::time without time zone,
+    fecha_fin date DEFAULT '0001-01-01'::date,
+    temporal smallint DEFAULT 0 NOT NULL,
+    estatus character varying(25) DEFAULT 'normal'::character varying NOT NULL
+);
+
+
+ALTER TABLE public.asignaciones OWNER TO postgres;
+
+--
+-- TOC entry 169 (class 1259 OID 26655)
+-- Dependencies: 170 5
+-- Name: asignaciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE asignaciones_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.asignaciones_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2081 (class 0 OID 0)
+-- Dependencies: 169
+-- Name: asignaciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE asignaciones_id_seq OWNED BY asignaciones.id;
+
+
+--
+-- TOC entry 172 (class 1259 OID 26686)
+-- Dependencies: 1880 1881 1882 1883 1884 1885 1886 1887 5
+-- Name: citas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE citas (
+    id integer NOT NULL,
+    paciente_id integer NOT NULL,
+    fecha date DEFAULT '0001-01-01'::date NOT NULL,
+    hora time without time zone DEFAULT '00:00:00'::time without time zone,
+    especialidad character varying(25),
+    medico_id integer NOT NULL,
+    proposito text NOT NULL,
+    urgente smallint DEFAULT (0)::smallint,
+    recordatorio smallint DEFAULT (0)::smallint,
+    recordatorio_email smallint DEFAULT (0)::smallint,
+    recordatorio_telefono smallint DEFAULT (0)::smallint,
+    razon_cancelado character varying(255),
+    encuentro_id integer DEFAULT 0,
+    estatus character varying(25) DEFAULT 'normal'::character varying NOT NULL
+);
+
+
+ALTER TABLE public.citas OWNER TO postgres;
+
+--
+-- TOC entry 171 (class 1259 OID 26684)
+-- Dependencies: 5 172
+-- Name: citas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE citas_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.citas_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2082 (class 0 OID 0)
+-- Dependencies: 171
+-- Name: citas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE citas_id_seq OWNED BY citas.id;
+
+
+--
+-- TOC entry 174 (class 1259 OID 26715)
+-- Dependencies: 1889 1890 1891 1892 1893 1894 1895 1896 1897 5
+-- Name: directorio; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE directorio (
+    id integer NOT NULL,
+    titulo character varying(25),
+    fecha_registro date,
+    primer_nombre character varying(60) NOT NULL,
+    segundo_nombre character varying(60),
+    primer_apellido character varying(60) NOT NULL,
+    segundo_apellido character varying(60),
+    fecha_nacimiento date DEFAULT '0001-01-01'::date,
+    medico_id integer,
+    enfermero_id integer,
+    telefono_1_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_1_numero character varying(7) DEFAULT ''::character varying,
+    telefono_2_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_2_numero character varying(7) DEFAULT ''::character varying,
+    celular_1_nr character varying(11) DEFAULT ''::character varying,
+    celular_2_nr character varying(11) DEFAULT ''::character varying,
+    email character varying(60) DEFAULT ''::character varying,
+    numero_habitacion character varying(10),
+    fecha date DEFAULT '0001-01-01'::date
+);
+
+
+ALTER TABLE public.directorio OWNER TO postgres;
+
+--
+-- TOC entry 173 (class 1259 OID 26713)
+-- Dependencies: 174 5
+-- Name: directorio_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE directorio_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.directorio_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2083 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: directorio_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE directorio_id_seq OWNED BY directorio.id;
+
+
+--
+-- TOC entry 162 (class 1259 OID 26555)
+-- Dependencies: 1822 1823 1824 1825 1826 1827 1828 1829 5
+-- Name: enfermeras; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE enfermeras (
+    id integer NOT NULL,
+    especialidad character varying(60) NOT NULL,
+    primer_nombre character varying(60) NOT NULL,
+    segundo_nombre character varying(60),
+    primer_apellido character varying(60) NOT NULL,
+    segundo_apellido character varying(60),
+    telefono_1_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_1_numero character varying(7) DEFAULT ''::character varying,
+    telefono_2_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_2_numero character varying(7) DEFAULT ''::character varying,
+    celular_1_nr character varying(11) DEFAULT ''::character varying,
+    celular_2_nr character varying(11) DEFAULT ''::character varying,
+    email character varying(60) DEFAULT ''::character varying,
+    sexo character(1) DEFAULT ''::bpchar,
+    fecha_entrada date,
+    fecha_salida date
+);
+
+
+ALTER TABLE public.enfermeras OWNER TO postgres;
+
+--
+-- TOC entry 161 (class 1259 OID 26553)
+-- Dependencies: 5 162
+-- Name: enfermeras_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE enfermeras_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.enfermeras_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2084 (class 0 OID 0)
+-- Dependencies: 161
+-- Name: enfermeras_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE enfermeras_id_seq OWNED BY enfermeras.id;
+
+
+--
+-- TOC entry 181 (class 1259 OID 26825)
+-- Dependencies: 1905 1906 1907 5
+-- Name: historia_clinica; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE historia_clinica (
+    reporte_id integer NOT NULL,
+    encuentro_id integer,
+    paciente_id integer NOT NULL,
+    primer_nombre character varying(60),
+    primer_apellido character varying(60),
+    reporte text,
+    reporte_fecha date DEFAULT '0001-01-01'::date,
+    reporte_hora time without time zone DEFAULT '00:00:00'::time without time zone,
+    fecha_comienzo_tratamiento date DEFAULT '0001-01-01'::date,
+    tipo_tratamiento character varying(60),
+    medicamentos text,
+    dosis text,
+    aplicado_por character varying(60),
+    notas text,
+    notas_auxiliares character varying(255),
+    fecha_revision date,
+    quirofano_id character varying(10),
+    cirugia_id integer NOT NULL,
+    fecha_cirugia date,
+    diagnostico text,
+    cirujano character varying(60),
+    asistente character varying(60),
+    enfermera integer,
+    enfermera_rotativa text,
+    anestesia character varying(30),
+    terapia text,
+    informacion_resultados text,
+    hora_entrada time without time zone,
+    hora_descanso time without time zone,
+    hora_cierre time without time zone,
+    hora_finalizacion time without time zone,
+    tiempo_vendaje text,
+    reposo text,
+    fecha_prescripcion date,
+    medico_prescripcion integer,
+    notas_prescripcion character varying(60),
+    fin_prescripcion date
+);
+
+
+ALTER TABLE public.historia_clinica OWNER TO postgres;
+
+--
+-- TOC entry 180 (class 1259 OID 26823)
+-- Dependencies: 5 181
+-- Name: historia_clinica_cirugia_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE historia_clinica_cirugia_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.historia_clinica_cirugia_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2085 (class 0 OID 0)
+-- Dependencies: 180
+-- Name: historia_clinica_cirugia_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE historia_clinica_cirugia_id_seq OWNED BY historia_clinica.cirugia_id;
+
+
+--
+-- TOC entry 179 (class 1259 OID 26821)
+-- Dependencies: 181 5
+-- Name: historia_clinica_reporte_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE historia_clinica_reporte_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.historia_clinica_reporte_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2086 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: historia_clinica_reporte_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE historia_clinica_reporte_id_seq OWNED BY historia_clinica.reporte_id;
+
+
+--
+-- TOC entry 164 (class 1259 OID 26571)
+-- Dependencies: 1831 1832 1833 1834 1835 1836 1837 1838 5
+-- Name: medicos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE medicos (
+    id integer NOT NULL,
+    especialidad character varying(60) NOT NULL,
+    primer_nombre character varying(60) NOT NULL,
+    segundo_nombre character varying(60),
+    primer_apellido character varying(60) NOT NULL,
+    segundo_apellido character varying(60),
+    telefono_1_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_1_numero character varying(7) DEFAULT ''::character varying,
+    telefono_2_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_2_numero character varying(7) DEFAULT ''::character varying,
+    celular_1_nr character varying(11) DEFAULT ''::character varying,
+    celular_2_nr character varying(11) DEFAULT ''::character varying,
+    email character varying(60) DEFAULT ''::character varying,
+    sexo character(1) DEFAULT ''::bpchar,
+    fecha_entrada date,
+    fecha_salida date
+);
+
+
+ALTER TABLE public.medicos OWNER TO postgres;
+
+--
+-- TOC entry 163 (class 1259 OID 26569)
+-- Dependencies: 164 5
+-- Name: medicos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE medicos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.medicos_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2087 (class 0 OID 0)
+-- Dependencies: 163
+-- Name: medicos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE medicos_id_seq OWNED BY medicos.id;
+
+
+--
+-- TOC entry 176 (class 1259 OID 26769)
+-- Dependencies: 5
+-- Name: menu_cafeteria; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE menu_cafeteria (
+    id integer NOT NULL,
+    menu text,
+    articulo text NOT NULL,
+    precio character varying(10),
+    descripcion text
+);
+
+
+ALTER TABLE public.menu_cafeteria OWNER TO postgres;
+
+--
+-- TOC entry 175 (class 1259 OID 26767)
+-- Dependencies: 5 176
+-- Name: menu_cafeteria_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE menu_cafeteria_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.menu_cafeteria_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2088 (class 0 OID 0)
+-- Dependencies: 175
+-- Name: menu_cafeteria_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE menu_cafeteria_id_seq OWNED BY menu_cafeteria.id;
+
+
+--
+-- TOC entry 178 (class 1259 OID 26780)
+-- Dependencies: 1900 1901 1902 1903 5
+-- Name: noticias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE noticias (
+    id integer NOT NULL,
+    numero_articulo integer NOT NULL,
+    categoria character varying(30) DEFAULT ''::character varying,
+    estatus character varying(10) DEFAULT 'pendiente'::character varying,
+    titulo character varying(255) NOT NULL,
+    prefacio character varying(255) NOT NULL,
+    cuerpo_principal text DEFAULT ''::text NOT NULL,
+    autor character varying(30) DEFAULT ''::character varying NOT NULL,
+    fecha date
+);
+
+
+ALTER TABLE public.noticias OWNER TO postgres;
+
+--
+-- TOC entry 177 (class 1259 OID 26778)
+-- Dependencies: 5 178
+-- Name: noticias_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE noticias_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.noticias_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2089 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: noticias_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE noticias_id_seq OWNED BY noticias.id;
+
+
+--
+-- TOC entry 166 (class 1259 OID 26601)
+-- Dependencies: 1840 1841 1842 1843 1844 1845 1846 1847 1848 1849 1850 1851 1852 5
+-- Name: paciente; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE paciente (
+    id integer NOT NULL,
+    fecha_registro date,
+    primer_nombre character varying(60) NOT NULL,
+    segundo_nombre character varying(60),
+    primer_apellido character varying(60) NOT NULL,
+    segundo_apellido character varying(60) NOT NULL,
+    fecha_nacimiento date DEFAULT '0001-01-01'::date,
+    tipo_sangre character(2) DEFAULT ''::bpchar,
+    direccion character varying(255) DEFAULT ''::character varying,
+    nacionalidad character varying(35) DEFAULT ''::character varying,
+    telefono_1_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_1_numero character varying(7) DEFAULT ''::character varying,
+    telefono_2_codigo character varying(4) DEFAULT '0212'::character varying,
+    telefono_2_numero character varying(7) DEFAULT ''::character varying,
+    celular_1_nr character varying(11) DEFAULT ''::character varying,
+    celular_2_nr character varying(11) DEFAULT ''::character varying,
+    email character varying(60) DEFAULT ''::character varying,
+    estado_civil character varying(35) DEFAULT ''::character varying,
+    sexo character(1) DEFAULT ''::bpchar
+);
+
+
+ALTER TABLE public.paciente OWNER TO postgres;
+
+--
+-- TOC entry 165 (class 1259 OID 26599)
+-- Dependencies: 5 166
+-- Name: paciente_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE paciente_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.paciente_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2090 (class 0 OID 0)
+-- Dependencies: 165
+-- Name: paciente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE paciente_id_seq OWNED BY paciente.id;
+
+
+--
+-- TOC entry 183 (class 1259 OID 26855)
+-- Dependencies: 1910 1911 1912 1913 1914 5
+-- Name: quirofano; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE quirofano (
+    id integer NOT NULL,
+    nombre character varying(35),
+    fecha date,
+    actividad character varying(35) NOT NULL,
+    id_responsable smallint DEFAULT 0 NOT NULL,
+    id_paciente smallint DEFAULT 0 NOT NULL,
+    hora time without time zone DEFAULT '00:00:00'::time without time zone,
+    cierre_temporal smallint DEFAULT 0,
+    descripcion text,
+    informacion text,
+    notas_estatus character varying(25) DEFAULT 'normal'::character varying NOT NULL,
+    historia text
+);
+
+
+ALTER TABLE public.quirofano OWNER TO postgres;
+
+--
+-- TOC entry 182 (class 1259 OID 26853)
+-- Dependencies: 183 5
+-- Name: quirofano_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE quirofano_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.quirofano_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2091 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: quirofano_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE quirofano_id_seq OWNED BY quirofano.id;
+
+
+--
+-- TOC entry 1853 (class 2604 OID 26628)
+-- Dependencies: 168 167 168
+-- Name: encuentro_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY admision ALTER COLUMN encuentro_id SET DEFAULT nextval('admision_encuentro_id_seq'::regclass);
+
+
+--
+-- TOC entry 1872 (class 2604 OID 26660)
+-- Dependencies: 169 170 170
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY asignaciones ALTER COLUMN id SET DEFAULT nextval('asignaciones_id_seq'::regclass);
+
+
+--
+-- TOC entry 1879 (class 2604 OID 26689)
+-- Dependencies: 172 171 172
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY citas ALTER COLUMN id SET DEFAULT nextval('citas_id_seq'::regclass);
+
+
+--
+-- TOC entry 1888 (class 2604 OID 26718)
+-- Dependencies: 173 174 174
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY directorio ALTER COLUMN id SET DEFAULT nextval('directorio_id_seq'::regclass);
+
+
+--
+-- TOC entry 1821 (class 2604 OID 26558)
+-- Dependencies: 161 162 162
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY enfermeras ALTER COLUMN id SET DEFAULT nextval('enfermeras_id_seq'::regclass);
+
+
+--
+-- TOC entry 1904 (class 2604 OID 26828)
+-- Dependencies: 179 181 181
+-- Name: reporte_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY historia_clinica ALTER COLUMN reporte_id SET DEFAULT nextval('historia_clinica_reporte_id_seq'::regclass);
+
+
+--
+-- TOC entry 1908 (class 2604 OID 26832)
+-- Dependencies: 180 181 181
+-- Name: cirugia_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY historia_clinica ALTER COLUMN cirugia_id SET DEFAULT nextval('historia_clinica_cirugia_id_seq'::regclass);
+
+
+--
+-- TOC entry 1830 (class 2604 OID 26574)
+-- Dependencies: 163 164 164
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY medicos ALTER COLUMN id SET DEFAULT nextval('medicos_id_seq'::regclass);
+
+
+--
+-- TOC entry 1898 (class 2604 OID 26772)
+-- Dependencies: 176 175 176
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY menu_cafeteria ALTER COLUMN id SET DEFAULT nextval('menu_cafeteria_id_seq'::regclass);
+
+
+--
+-- TOC entry 1899 (class 2604 OID 26783)
+-- Dependencies: 177 178 178
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY noticias ALTER COLUMN id SET DEFAULT nextval('noticias_id_seq'::regclass);
+
+
+--
+-- TOC entry 1839 (class 2604 OID 26604)
+-- Dependencies: 166 165 166
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY paciente ALTER COLUMN id SET DEFAULT nextval('paciente_id_seq'::regclass);
+
+
+--
+-- TOC entry 1909 (class 2604 OID 26858)
+-- Dependencies: 183 182 183
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY quirofano ALTER COLUMN id SET DEFAULT nextval('quirofano_id_seq'::regclass);
+
+
+--
+-- TOC entry 2056 (class 0 OID 26625)
+-- Dependencies: 168 2072
+-- Data for Name: admision; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY admision (encuentro_id, paciente_id, encuentro_fecha, encuentro_tipo, hora, diagnostico_referido, terapia_recomendada_referido, medico_referido, institucion_referido, notas_referido, compania_seguros, compania_seguros2, contacto_paciente_nombre, contacto_paciente_apellido, contacto_relation, numero_habitacion, doctor_consulta, servicios_extras, alta, fecha_alta, hora_alta, fecha_revision, responsable_revision, notas_encuentro, estatus, primer_nombre, primer_apellido) FROM stdin;
+1	1	2015-03-23	tipo	00:00:00	df	trr	mr	ir	notas	0	0	xcvxc	vxcvxcv	xcvxcvx	1	xcvxcvx	cvxcvx	1	2015-03-25	00:00:00	0001-01-01	mi	botas	sdfsfd	enny	rod
+\.
+
+
+--
+-- TOC entry 2092 (class 0 OID 0)
+-- Dependencies: 167
+-- Name: admision_encuentro_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('admision_encuentro_id_seq', 1, true);
+
+
+--
+-- TOC entry 2058 (class 0 OID 26657)
+-- Dependencies: 170 2072
+-- Data for Name: asignaciones; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY asignaciones (id, actividad, descripcion_actividad, id_responsable, id_quirofano, fecha_inicio, hora, fecha_fin, temporal, estatus) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2093 (class 0 OID 0)
+-- Dependencies: 169
+-- Name: asignaciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('asignaciones_id_seq', 1, false);
+
+
+--
+-- TOC entry 2060 (class 0 OID 26686)
+-- Dependencies: 172 2072
+-- Data for Name: citas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY citas (id, paciente_id, fecha, hora, especialidad, medico_id, proposito, urgente, recordatorio, recordatorio_email, recordatorio_telefono, razon_cancelado, encuentro_id, estatus) FROM stdin;
+2	1	0001-01-01	00:00:00		1	dafadf	\N	\N	\N	\N		0	normal
+\.
+
+
+--
+-- TOC entry 2094 (class 0 OID 0)
+-- Dependencies: 171
+-- Name: citas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('citas_id_seq', 2, true);
+
+
+--
+-- TOC entry 2062 (class 0 OID 26715)
+-- Dependencies: 174 2072
+-- Data for Name: directorio; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY directorio (id, titulo, fecha_registro, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, medico_id, enfermero_id, telefono_1_codigo, telefono_1_numero, telefono_2_codigo, telefono_2_numero, celular_1_nr, celular_2_nr, email, numero_habitacion, fecha) FROM stdin;
+1	Dr.	2015-03-24	Enny	asdas	Rodriguez		0001-01-01	\N	\N	0212	1305500	0212	1305500					0001-01-01
+\.
+
+
+--
+-- TOC entry 2095 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: directorio_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('directorio_id_seq', 1, true);
+
+
+--
+-- TOC entry 2050 (class 0 OID 26555)
+-- Dependencies: 162 2072
+-- Data for Name: enfermeras; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY enfermeras (id, especialidad, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, telefono_1_codigo, telefono_1_numero, telefono_2_codigo, telefono_2_numero, celular_1_nr, celular_2_nr, email, sexo, fecha_entrada, fecha_salida) FROM stdin;
+1	Instrumentista	Linda		Figueroa		0212	3054680	0212	3054680	04162589494	04162589494	correo@correo.com	F	2015-03-24	2015-03-27
+\.
+
+
+--
+-- TOC entry 2096 (class 0 OID 0)
+-- Dependencies: 161
+-- Name: enfermeras_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('enfermeras_id_seq', 1, true);
+
+
+--
+-- TOC entry 2069 (class 0 OID 26825)
+-- Dependencies: 181 2072
+-- Data for Name: historia_clinica; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY historia_clinica (reporte_id, encuentro_id, paciente_id, primer_nombre, primer_apellido, reporte, reporte_fecha, reporte_hora, fecha_comienzo_tratamiento, tipo_tratamiento, medicamentos, dosis, aplicado_por, notas, notas_auxiliares, fecha_revision, quirofano_id, cirugia_id, fecha_cirugia, diagnostico, cirujano, asistente, enfermera, enfermera_rotativa, anestesia, terapia, informacion_resultados, hora_entrada, hora_descanso, hora_cierre, hora_finalizacion, tiempo_vendaje, reposo, fecha_prescripcion, medico_prescripcion, notas_prescripcion, fin_prescripcion) FROM stdin;
+2	1	2	enny	bxcvx	cvxcvxcvxcvxcv	2015-03-26	00:00:00	2015-03-27	xcv	xcvxcvxc	xcvxcvxcv	xcvxcv	xcvxcvxc	xcvxcv	2015-03-27	xcvxcvxcv	2	2015-03-28	cvxcvxcvxcv	xcvxcvxcv	xcvxcv	1	xcvxcv	sdfsdf	sdfsdf	sdfsdfsd	00:00:00	00:00:00	00:00:00	00:00:00	sdfsdfsdfsdfsdf	sdfsdfsdfsdfsdfsdfs	2015-03-25	1	sdfsdf	2015-03-25
+3	\N	2	sacdasdfa	asdfasdfa	asdfasdfaf	0001-01-01	00:00:00	0001-01-01	asdfasd	dafsdfadf	asdfasdf	1	1	esdfwef	2015-03-26	1	3	2015-03-26	swafdsdfasd	sadaf	asdfas	1	1	1	1	1	00:00:00	00:00:00	00:00:00	00:00:00	11	ewfw	2015-03-25	1	1	2015-03-26
+\.
+
+
+--
+-- TOC entry 2097 (class 0 OID 0)
+-- Dependencies: 180
+-- Name: historia_clinica_cirugia_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('historia_clinica_cirugia_id_seq', 4, true);
+
+
+--
+-- TOC entry 2098 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: historia_clinica_reporte_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('historia_clinica_reporte_id_seq', 4, true);
+
+
+--
+-- TOC entry 2052 (class 0 OID 26571)
+-- Dependencies: 164 2072
+-- Data for Name: medicos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY medicos (id, especialidad, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, telefono_1_codigo, telefono_1_numero, telefono_2_codigo, telefono_2_numero, celular_1_nr, celular_2_nr, email, sexo, fecha_entrada, fecha_salida) FROM stdin;
+1	Pediatria	Enny	Rafael	Rodriguez	Bracho	0212	3054680	0212	3054680	04166121956	04166121956	correo@correo.com	M	2015-03-24	2015-03-28
+\.
+
+
+--
+-- TOC entry 2099 (class 0 OID 0)
+-- Dependencies: 163
+-- Name: medicos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('medicos_id_seq', 1, true);
+
+
+--
+-- TOC entry 2064 (class 0 OID 26769)
+-- Dependencies: 176 2072
+-- Data for Name: menu_cafeteria; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY menu_cafeteria (id, menu, articulo, precio, descripcion) FROM stdin;
+1	Menu del dia	Carne con arroz.	250 Bsf	Carne con arroz
+\.
+
+
+--
+-- TOC entry 2100 (class 0 OID 0)
+-- Dependencies: 175
+-- Name: menu_cafeteria_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('menu_cafeteria_id_seq', 1, true);
+
+
+--
+-- TOC entry 2066 (class 0 OID 26780)
+-- Dependencies: 178 2072
+-- Data for Name: noticias; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY noticias (id, numero_articulo, categoria, estatus, titulo, prefacio, cuerpo_principal, autor, fecha) FROM stdin;
+1	1	Inauguracion	pendiente	Nuestro primer artículo	Bienvenidos al Sistema de Gestión del Historial Clínico	Bienvenidos al Sistema de Gestión del Historial Clínico aquí estará disponible toda la información de su interés.	E.R	2015-03-25
+\.
+
+
+--
+-- TOC entry 2101 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: noticias_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('noticias_id_seq', 1, true);
+
+
+--
+-- TOC entry 2054 (class 0 OID 26601)
+-- Dependencies: 166 2072
+-- Data for Name: paciente; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY paciente (id, fecha_registro, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, tipo_sangre, direccion, nacionalidad, telefono_1_codigo, telefono_1_numero, telefono_2_codigo, telefono_2_numero, celular_1_nr, celular_2_nr, email, estado_civil, sexo) FROM stdin;
+1	2015-03-10	Enny	Aquilez	Rodriguez	Bracho	1992-09-08	A+	Coche- Urb Carlos Delgado Chalbaud	Venezolana	0212	1234345	0212	1305500	2334545	2334545	aquilez.4@gmail.com	soltero	M
+2	2015-03-10	Eduardo	Rafael	Rodriguez	Bracho	2000-02-24	A+	Coche- Urb Carlos Delgado Chalbaud	Venezolana	0212	1234345	0212	1305500	2334545	2334545	aquilez.4@gmail.com	soltero	M
+3	2015-03-10	Yoxany	Mayerlin	Alvarez	Oliviett	1992-01-01	A+	calle otra	Venezolana	0212	1234345	0212	1305500	04265336282	2334545	aquilez.4@gmail.com	soltero	M
+\.
+
+
+--
+-- TOC entry 2102 (class 0 OID 0)
+-- Dependencies: 165
+-- Name: paciente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('paciente_id_seq', 3, true);
+
+
+--
+-- TOC entry 2071 (class 0 OID 26855)
+-- Dependencies: 183 2072
+-- Data for Name: quirofano; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY quirofano (id, nombre, fecha, actividad, id_responsable, id_paciente, hora, cierre_temporal, descripcion, informacion, notas_estatus, historia) FROM stdin;
+1	Cesareas	2015-04-01	Cesarea	1	2	00:00:00	0	desc	imfo	normal	fdgdfgdg
+\.
+
+
+--
+-- TOC entry 2103 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: quirofano_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('quirofano_id_seq', 1, true);
+
+
+--
+-- TOC entry 1922 (class 2606 OID 26649)
+-- Dependencies: 168 168 2073
+-- Name: admision_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY admision
+    ADD CONSTRAINT admision_pkey PRIMARY KEY (encuentro_id);
+
+
+--
+-- TOC entry 1924 (class 2606 OID 26673)
+-- Dependencies: 170 170 2073
+-- Name: asignaciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY asignaciones
+    ADD CONSTRAINT asignaciones_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1926 (class 2606 OID 26702)
+-- Dependencies: 172 172 2073
+-- Name: citas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY citas
+    ADD CONSTRAINT citas_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1928 (class 2606 OID 26729)
+-- Dependencies: 174 174 2073
+-- Name: directorio_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY directorio
+    ADD CONSTRAINT directorio_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1916 (class 2606 OID 26568)
+-- Dependencies: 162 162 2073
+-- Name: enfermeras_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY enfermeras
+    ADD CONSTRAINT enfermeras_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1934 (class 2606 OID 26837)
+-- Dependencies: 181 181 2073
+-- Name: historia_clinica_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY historia_clinica
+    ADD CONSTRAINT historia_clinica_pkey PRIMARY KEY (reporte_id);
+
+
+--
+-- TOC entry 1918 (class 2606 OID 26584)
+-- Dependencies: 164 164 2073
+-- Name: medicos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY medicos
+    ADD CONSTRAINT medicos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1930 (class 2606 OID 26777)
+-- Dependencies: 176 176 2073
+-- Name: menu_cafeteria_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY menu_cafeteria
+    ADD CONSTRAINT menu_cafeteria_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1932 (class 2606 OID 26792)
+-- Dependencies: 178 178 2073
+-- Name: noticias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY noticias
+    ADD CONSTRAINT noticias_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1920 (class 2606 OID 26622)
+-- Dependencies: 166 166 2073
+-- Name: paciente_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY paciente
+    ADD CONSTRAINT paciente_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1936 (class 2606 OID 26868)
+-- Dependencies: 183 183 2073
+-- Name: quirofano_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY quirofano
+    ADD CONSTRAINT quirofano_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1937 (class 2606 OID 26650)
+-- Dependencies: 166 168 1919 2073
+-- Name: admision_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY admision
+    ADD CONSTRAINT admision_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES paciente(id);
+
+
+--
+-- TOC entry 1938 (class 2606 OID 26674)
+-- Dependencies: 1917 164 170 2073
+-- Name: asignaciones_id_responsable_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY asignaciones
+    ADD CONSTRAINT asignaciones_id_responsable_fkey FOREIGN KEY (id_responsable) REFERENCES medicos(id);
+
+
+--
+-- TOC entry 1940 (class 2606 OID 26708)
+-- Dependencies: 164 1917 172 2073
+-- Name: citas_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY citas
+    ADD CONSTRAINT citas_medico_id_fkey FOREIGN KEY (medico_id) REFERENCES medicos(id);
+
+
+--
+-- TOC entry 1939 (class 2606 OID 26703)
+-- Dependencies: 166 1919 172 2073
+-- Name: citas_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY citas
+    ADD CONSTRAINT citas_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES paciente(id);
+
+
+--
+-- TOC entry 1942 (class 2606 OID 26735)
+-- Dependencies: 1915 174 162 2073
+-- Name: directorio_enfermero_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY directorio
+    ADD CONSTRAINT directorio_enfermero_id_fkey FOREIGN KEY (enfermero_id) REFERENCES enfermeras(id);
+
+
+--
+-- TOC entry 1941 (class 2606 OID 26730)
+-- Dependencies: 1917 164 174 2073
+-- Name: directorio_medico_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY directorio
+    ADD CONSTRAINT directorio_medico_id_fkey FOREIGN KEY (medico_id) REFERENCES medicos(id);
+
+
+--
+-- TOC entry 1944 (class 2606 OID 26843)
+-- Dependencies: 162 181 1915 2073
+-- Name: historia_clinica_enfermera_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY historia_clinica
+    ADD CONSTRAINT historia_clinica_enfermera_fkey FOREIGN KEY (enfermera) REFERENCES enfermeras(id);
+
+
+--
+-- TOC entry 1945 (class 2606 OID 26848)
+-- Dependencies: 181 164 1917 2073
+-- Name: historia_clinica_medico_prescripcion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY historia_clinica
+    ADD CONSTRAINT historia_clinica_medico_prescripcion_fkey FOREIGN KEY (medico_prescripcion) REFERENCES medicos(id);
+
+
+--
+-- TOC entry 1943 (class 2606 OID 26838)
+-- Dependencies: 1919 166 181 2073
+-- Name: historia_clinica_paciente_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY historia_clinica
+    ADD CONSTRAINT historia_clinica_paciente_id_fkey FOREIGN KEY (paciente_id) REFERENCES paciente(id);
+
+
+--
+-- TOC entry 1947 (class 2606 OID 26874)
+-- Dependencies: 166 183 1919 2073
+-- Name: quirofano_id_paciente_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY quirofano
+    ADD CONSTRAINT quirofano_id_paciente_fkey FOREIGN KEY (id_paciente) REFERENCES paciente(id);
+
+
+--
+-- TOC entry 1946 (class 2606 OID 26869)
+-- Dependencies: 183 164 1917 2073
+-- Name: quirofano_id_responsable_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY quirofano
+    ADD CONSTRAINT quirofano_id_responsable_fkey FOREIGN KEY (id_responsable) REFERENCES medicos(id);
+
+
+--
+-- TOC entry 2078 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2015-03-30 06:41:40 VET
+
+--
+-- PostgreSQL database dump complete
+--
+
