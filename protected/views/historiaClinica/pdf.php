@@ -1,6 +1,9 @@
 <?php
 $pdf = Yii::createComponent('application.extensions.MPDF52.mpdf');
 $html='
+</br>
+</br>
+</hr>
 <table id="yw0" class="detail-view2">
 <tr class="principal">
 <td colspan="2" align="center"><b></b></td>
@@ -20,13 +23,13 @@ $html='
 	</tr>
 
 	<tr class="odd">
-		<td> <b>Reporte: </b> </td>
+		<td> <b>numero de Reporte: </b> </td>
 		<td> '.$model->reporte_id.'</td>
 	</tr>
 
 	<tr class="even">
-		<td> <b>Encuentro: </b> </td>
-		<td> '.$model->encuentro_id.'</td>
+		<td> <b>Descripcion del reporte: </b> </td>
+		<td> '.$model->reporte.'</td>
 	</tr>
 	<tr class="odd">
 		<td> <b>TITULO</b> </td>
@@ -194,7 +197,7 @@ $html='
 </table>';
 
 
-$header='<img src="'.Yii::app()->request->baseUrl.'/images/banner.png"/>';
+$header='<img src="'.Yii::app()->request->baseUrl.'/images/banner.jpg"/>';
 $mpdf=new mPDF('win-1252','LETTER','','',15,15,25,12,5,7);
 $mpdf->SetHTMLHeader($header);
 $mpdf->SetFooter(' {DATE j/m/Y}|Página {PAGENO}/{nbpg}|Sistema de Gestion de Historial Clinico');
